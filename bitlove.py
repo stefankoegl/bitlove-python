@@ -42,9 +42,9 @@ https://bitlove.org/help/podcaster/api
 
 
 # Will be parsed by setup.py to determine package metadata
-__author__ = 'Stefan Kögl <stefan@skoegl.net>'
+__author__ = 'Stefan KÃ¶gl <stefan@skoegl.net>'
 __version__ = '0.1'
-__website__ = 'http://github.com/stefankoegl/bitlove-python'
+__website__ = 'https://github.com/stefankoegl/bitlove-python'
 __license__ = 'Modified BSD License'
 
 
