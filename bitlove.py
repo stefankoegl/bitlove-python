@@ -90,13 +90,13 @@ class BitloveResponse(object):
     def get(self, url):
         """ Get the response for the given enclosure URL """
         self._query()
-        return self._resp.get(url)
+        return Enclosure(self._resp.get(url), url)
 
 
     def __iter__(self):
         """ iterate over all enclosure URLs """
         self._query()
-        return (self.get(url) for url in self.urls)
+        return (Enclosure(self.get(url), url) for url in self.urls)
 
 
     def _query(self):
@@ -112,3 +112,49 @@ class BitloveResponse(object):
             # query API
             r = self.opener.open(BITLOVE_ENCLOSURE_API + query)
             self._resp = json.loads(r.read())
+
+
+class Enclosure(object):
+    """ proxies a response for an enclosure """
+
+    def __init__(self, obj, url):
+        self.url = url
+        self.obj = obj
+
+
+    def __getattr__(self, key):
+        res = self.obj.__getitem__(key)
+
+        if key == 'sources':
+            return [Source(s) for s in res]
+
+        return res
+
+
+    def __str__(self):
+        return '<{cls} {url}>'.format(cls=self.__class__.__name__,
+                url=self.url)
+
+
+    def __dir__(self):
+        return sorted(dir(object) + self.obj.keys() + ['url'])
+
+
+
+class Source(object):
+    """ proxies the "source" part of a response """
+
+    def __init__(self, obj):
+        self.obj = obj
+
+
+    def __getattr__(self, key):
+        return self.obj.__getitem__(key.replace('_', '.'))
+
+
+    def __str__(self):
+        return '<{cls} {torrent}>'.format(cls=self.__class__.__name__,
+                torrent=self.torrent)
+
+    def __dir__(self):
+        return sorted(dir(object) + self.obj.keys())
